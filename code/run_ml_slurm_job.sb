@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# Number of nodes needed:
+#SBATCH --nodes=1
+#
+# Tasks per node:
+#SBATCH --ntasks-per-node=1
+#
+# Processors per task:
+#SBATCH --cpus-per-task=12
+#
+# Memory per node:
+#SBATCH --mem-per-cpu=8G
+#
+# Wall time (e.g. "min", "hrs:mins:secs","days-hrs","days-hrs:mins"):
+#SBATCH --time=24:00:00
+#
+# Mail type:
+#SBATCH --mail-type=ALL
+#
+# Mail user:
+#SBATCH --mail-user=palandes@msu.edu
+
+
+echo "JobID: $SLURM_JOB_ID"
+echo "Running on node: `hostname`"
+
+export CONDA3PATH=/mnt/home/palandes/miniconda3
+module purge
+module load Conda/3
+module load GCCcore/6.4.0 binutils/2.28 GNU/6.4.0-2.28
+module load Tcl/8.6.8 powertools/1.2
+
+echo "Home Directory: $HOME"
+echo "Conda 3 Path: $CONDA3PATH"
+echo "Data Type: $DATA"
+echo "Model Type: $MODEL"
+
+logfilename=$(echo $MODEL)_$(echo $DATA)
+
+echo "Log File Name: $logfilename"
+
+conda activate plant-tda
+cd /mnt/home/palandes/Projects/arabidopsis_gene_expression/code
+python run_$(echo $DATA)_ml.py -m -clf $MODEL > $logfilename.log
